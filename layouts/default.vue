@@ -1,20 +1,24 @@
 <template>
-  <el-container>
-    <el-header>
+  <el-container class="layout-default">
+    <el-header height="197px">
       <my-header></my-header>
     </el-header>
     <el-main>
-      <Nuxt />
+      <nuxt />
     </el-main>
-    <el-footer>Footer</el-footer>
+    <el-footer height="100%">
+      <my-footer></my-footer>
+    </el-footer>
   </el-container>
 </template>
 
 <script>
 import MyHeader from '@/components/public/header'
+import MyFooter from '@/components/public/footer'
 export default {
   components: {
     MyHeader,
+    MyFooter,
   },
 }
 </script>
