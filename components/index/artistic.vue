@@ -67,54 +67,8 @@ export default {
     return {
       kind: 'all',
       list: {
-        all: [
-          /* {
-            title: "来点烤肉（世茂广场店）",
-            img:
-              "//p0.meituan.net/msmerchant/e0f687f4444bb9492e57d096ef235cf3106632.jpg@460w_260h_1e_1c",
-            pos: "来点烤肉双人餐，提供免费WiFi",
-            price: "118"
-          },
-          {
-            title: "小飛甲",
-            img:
-              "//p0.meituan.net/msmerchant/4982493fe0dd39045f8823555012f387185973.png@460w_260h_1e_1c",
-            pos: "3-4人餐，提供免费WiFi",
-            price: "219"
-          },
-
-          {
-            title: "南昌绿地华邑酒店",
-            img:
-              "//p1.meituan.net/tdchotel/678acaeb6775a6b2b774c1465baa1afe1822568.jpg@460w_260h_1e_1c",
-            pos: "新客超值优惠、酒店套餐、发票推荐",
-            price: "941"
-          } */
-        ],
-        part: [
-          /* {
-            title: "来点烤肉（世茂广场店）",
-            img:
-              "//p0.meituan.net/msmerchant/e0f687f4444bb9492e57d096ef235cf3106632.jpg@460w_260h_1e_1c",
-            pos: "来点烤肉双人餐，提供免费WiFi",
-            price: "118"
-          },
-
-          {
-            title: "南昌绿地华邑酒店",
-            img:
-              "//p1.meituan.net/tdchotel/678acaeb6775a6b2b774c1465baa1afe1822568.jpg@460w_260h_1e_1c",
-            pos: "新客超值优惠、酒店套餐、发票推荐",
-            price: "941"
-          },
-          {
-            title: "小飛甲",
-            img:
-              "//p0.meituan.net/msmerchant/4982493fe0dd39045f8823555012f387185973.png@460w_260h_1e_1c",
-            pos: "3-4人餐，提供免费WiFi",
-            price: "219"
-          } */
-        ],
+        all: [],
+        part: [],
         spa: [],
         movie: [],
         travel: [],
@@ -126,69 +80,69 @@ export default {
       return this.list[this.kind]
     },
   },
-  // async mounted() {
-  //   const self = this
-  //   const {
-  //     status,
-  //     data: { count, pois },
-  //   } = await self.$axios.get('/search/resultsByKeywords', {
-  //     params: {
-  //       keyword: '景点',
-  //       city: self.$store.state.geo.position.city,
-  //     },
-  //   })
-  //   if (status === 200 && count > 0) {
-  //     const r = pois
-  //       .filter((item) => item.photos.length)
-  //       .map((item) => {
-  //         return {
-  //           title: item.name,
-  //           pos: item.type.split(';')[0],
-  //           price: item.biz_ext.cost || '暂无',
-  //           img: item.photos[0].url,
-  //           url: '//abc.com',
-  //         }
-  //       })
-  //     self.list[self.kind] = r.slice(0, 9)
-  //   } else {
-  //     self.list[self.kind] = []
-  //   }
-  // },
+  async mounted() {
+    const self = this
+    const {
+      status,
+      data: { count, pois },
+    } = await self.$axios.get('/search/resultsByKeywords', {
+      params: {
+        keyword: '景点',
+        city: self.$store.state.geo.position.city,
+      },
+    })
+    if (status === 200 && count > 0) {
+      const r = pois
+        .filter((item) => item.photos.length)
+        .map((item) => {
+          return {
+            title: item.name,
+            pos: item.type.split(';')[0],
+            price: item.biz_ext.cost || '暂无',
+            img: item.photos[0].url,
+            url: '//abc.com',
+          }
+        })
+      self.list[self.kind] = r.slice(0, 9)
+    } else {
+      self.list[self.kind] = []
+    }
+  },
   methods: {
-    // async over(e) {
-    //   const dom = e.target
-    //   const tag = dom.tagName.toLowerCase()
-    //   const self = this
-    //   if (tag === 'dd') {
-    //     this.kind = dom.getAttribute('kind')
-    //     const keyword = dom.getAttribute('keyword')
-    //     const {
-    //       status,
-    //       data: { count, pois },
-    //     } = await self.$axios.get('/search/resultsByKeywords', {
-    //       params: {
-    //         keyword,
-    //         city: self.$store.state.geo.position.city,
-    //       },
-    //     })
-    //     if (status === 200 && count > 0) {
-    //       const r = pois
-    //         .filter((item) => item.photos.length)
-    //         .map((item) => {
-    //           return {
-    //             title: item.name,
-    //             pos: item.type.split(';')[0],
-    //             price: item.biz_ext.cost || '暂无',
-    //             img: item.photos[0].url,
-    //             url: '//abc.com',
-    //           }
-    //         })
-    //       self.list[self.kind] = r.slice(0, 9)
-    //     } else {
-    //       self.list[self.kind] = []
-    //     }
-    //   }
-    // },
+    async over(e) {
+      const dom = e.target
+      const tag = dom.tagName.toLowerCase()
+      const self = this
+      if (tag === 'dd') {
+        this.kind = dom.getAttribute('kind')
+        const keyword = dom.getAttribute('keyword')
+        const {
+          status,
+          data: { count, pois },
+        } = await self.$axios.get('/search/resultsByKeywords', {
+          params: {
+            keyword,
+            city: self.$store.state.geo.position.city,
+          },
+        })
+        if (status === 200 && count > 0) {
+          const r = pois
+            .filter((item) => item.photos.length)
+            .map((item) => {
+              return {
+                title: item.name,
+                pos: item.type.split(';')[0],
+                price: item.biz_ext.cost || '暂无',
+                img: item.photos[0].url,
+                url: '//abc.com',
+              }
+            })
+          self.list[self.kind] = r.slice(0, 9)
+        } else {
+          self.list[self.kind] = []
+        }
+      }
+    },
   },
 }
 </script>

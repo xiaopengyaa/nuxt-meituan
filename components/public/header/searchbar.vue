@@ -18,23 +18,40 @@
             @blur="blur"
             @input="input"
           ></el-input>
-          <button class="el-button el-button--primary">
+          <button class="el-button el-button--primary" @click="btnSearch">
             <i class="el-icon-search" />
           </button>
-          <dl v-show="isHotPlace" class="hot-place">
+          <dl
+            v-if="isHotPlace && $store.state.home.hotPlace.length > 0"
+            class="hotPlace"
+          >
             <dt>热门搜索</dt>
-            <dd v-for="(item, index) in hotPlace" :key="index">{{ item }}</dd>
+            <dd
+              v-for="(item, idx) in $store.state.home.hotPlace.slice(0, 5)"
+              :key="idx"
+            >
+              <nuxt-link
+                :to="'/products?keyword=' + encodeURIComponent(item.name)"
+                >{{ item.name }}</nuxt-link
+              >
+            </dd>
           </dl>
-          <dl v-show="isSearchList" class="search-list">
-            <dd v-for="(item, index) in searchList" :key="index">{{ item }}</dd>
+          <dl v-if="isSearchList" class="searchList">
+            <dd v-for="(item, idx) in searchList" :key="idx">
+              <nuxt-link
+                :to="'/products?keyword=' + encodeURIComponent(item.name)"
+                >{{ item.name }}</nuxt-link
+              >
+            </dd>
           </dl>
         </div>
         <p class="suggest">
-          <a href="">故宫博物院</a>
-          <a href="">故宫博物院</a>
-          <a href="">故宫博物院</a>
-          <a href="">故宫博物院</a>
-          <a href="">故宫博物院</a>
+          <nuxt-link
+            v-for="(item, idx) in $store.state.home.hotPlace.slice(0, 5)"
+            :key="idx"
+            :to="'/products?keyword=' + encodeURIComponent(item.name)"
+            >{{ item.name }}</nuxt-link
+          >
         </p>
         <ul class="nav">
           <li>
@@ -47,7 +64,7 @@
             <nuxt-link to="/" class="hotel">美团酒店</nuxt-link>
           </li>
           <li>
-            <nuxt-link to="/" class="apartment">民俗 / 公寓</nuxt-link>
+            <nuxt-link to="/" class="apartment">民俗/公寓</nuxt-link>
           </li>
           <li>
             <nuxt-link to="/" class="business">商家入驻</nuxt-link>
@@ -78,13 +95,14 @@
 </template>
 
 <script>
+import _ from 'lodash'
 export default {
   data() {
     return {
       search: '',
       isFocus: false,
-      hotPlace: ['火锅', '火锅', '火锅', '火锅'],
-      searchList: ['火锅', '火锅', '火锅', '火锅'],
+      hotPlace: [],
+      searchList: [],
     }
   },
   computed: {
@@ -95,17 +113,50 @@ export default {
       return this.isFocus && this.search
     },
   },
+  async mounted() {
+    const {
+      status: status3,
+      data: { result },
+    } = await this.$axios.get('/search/hotPlace', {
+      params: {
+        city: this.$store.state.geo.position.city.replace('市', ''),
+      },
+    })
+    this.$store.commit('home/setHotPlace', status3 === 200 ? result : [])
+  },
   methods: {
     focus() {
       this.isFocus = true
     },
     blur() {
-      setTimeout(() => {
-        this.isFocus = false
+      const self = this
+      setTimeout(function () {
+        self.isFocus = false
       }, 200)
     },
-    input(val) {
-      window.console.log(val)
+    input: _.debounce(async function () {
+      const self = this
+      const city = self.$store.state.geo.position.city.replace('市', '')
+      self.searchList = []
+      const {
+        data: { top },
+      } = await self.$axios.get('/search/top', {
+        params: {
+          input: self.search,
+          city,
+        },
+      })
+      self.searchList = top.slice(0, 10)
+    }, 300),
+    btnSearch() {
+      this.$router.push(`/products?keyword=${encodeURIComponent(this.search)}`)
+    },
+    goto(name) {
+      // sessionStorage.setItem("flag", name);
+      /* this.$router.push({
+        path: "/",
+        query: { name: name }
+      }); */
     },
   },
 }

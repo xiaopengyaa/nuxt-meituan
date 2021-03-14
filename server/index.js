@@ -6,9 +6,15 @@ const bodyParser = require('koa-bodyparser')
 const session = require('koa-generic-session')
 const Redis = require('koa-redis')
 const json = require('koa-json')
+const logger = require('koa-logger')
 const dbConfig = require('./dbs/config')
 const passport = require('./interface/utils/passport')
 const users = require('./interface/users')
+const geo = require('./interface/geo')
+const search = require('./interface/search')
+const categroy = require('./interface/categroy')
+const cart = require('./interface/cart')
+const order = require('./interface/order')
 
 async function start() {
   const app = new Koa()
@@ -38,6 +44,7 @@ async function start() {
       extendTypes: ['json', 'form', 'text'],
     })
   )
+  app.use(logger())
   app.use(json())
   await nuxt.ready()
 
@@ -62,6 +69,11 @@ async function start() {
 
   // 启动路由
   app.use(users.routes()).use(users.allowedMethods())
+  app.use(geo.routes()).use(geo.allowedMethods())
+  app.use(search.routes()).use(search.allowedMethods())
+  app.use(categroy.routes()).use(categroy.allowedMethods())
+  app.use(cart.routes()).use(cart.allowedMethods())
+  app.use(order.routes()).use(order.allowedMethods())
 
   app.use((ctx) => {
     ctx.status = 200

@@ -10,8 +10,8 @@ const router = new Router({
 
 router.get('/getPosition', (ctx) => {
   ctx.body = {
-    province: '广东省',
-    city: '广州市',
+    province: '海南省',
+    city: '三亚市',
   }
   // const {
   //   status,

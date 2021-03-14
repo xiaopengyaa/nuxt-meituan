@@ -1,11 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const Menus = new Schema({
-  id: {
-    type: String,
-    require: true,
-  },
-  value: {
+  menu: {
     type: Array,
     require: true,
   },
